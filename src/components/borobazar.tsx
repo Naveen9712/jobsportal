@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Search, ShoppingCart, User, Menu, X, Star, ArrowRight, Smartphone, Download } from 'lucide-react';
+import { useState } from 'react';
+import { Search, ShoppingCart, User, Menu, X, ArrowRight } from 'lucide-react';
 
 const BoroBazarTemplate = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
