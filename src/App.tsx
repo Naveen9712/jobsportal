@@ -1,9 +1,9 @@
 import React from 'react';
 import './styles/App.css';
-import BoroBazarTemplate from './components/borobazar';
+import JobPortal from './components/symantrix365';
 
 const App: React.FC = () => {
-  return <BoroBazarTemplate />;
+  return <JobPortal />;
 };
 
 export default App;
