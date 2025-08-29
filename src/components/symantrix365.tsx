@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { MapPin, Clock, DollarSign, Building2, Users, Star, Trash2 } from 'lucide-react';
 import { jobsData, filterOptions, type Job } from '../jobsData';
 
@@ -206,8 +207,8 @@ const JobPortal = () => {
             <div className="flex items-center space-x-8">
               <div className="text-2xl font-bold text-blue-600">Symantrix365</div>
               <nav className="hidden md:flex space-x-8">
-                <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors">Search Jobs</a>
-                <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors">Post Jobs</a>
+                <Link to="/" className="text-gray-700 hover:text-blue-600 transition-colors">Search Jobs</Link>
+                <Link to="/post-job" className="text-gray-700 hover:text-blue-600 transition-colors">Post Jobs</Link>
                 <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors">Company</a>
                 <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors">Contact</a>
               </nav>
