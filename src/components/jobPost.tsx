@@ -82,7 +82,30 @@ const PostJobPage = () => {
       autoDeleteInDays: ''
     });
   };
-
+  const handleSubmit = async () => {
+    try {
+      const response = await fetch('https://joblistings-tk6u.onrender.com/api/jobs', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        alert('Job posted successfully!');
+        handleClear(); // Clear the form
+      } else {
+        alert(`Error: ${data.message || 'Failed to post job'}`);
+        console.error('Validation errors:', data.errors);
+      }
+    } catch (error) {
+      console.error('Error posting job:', error);
+      alert('Failed to post job. Please try again.');
+    }
+  };
   const jobTypes = ['Full-time', 'Part-time', 'Contract', 'Internship', 'Freelance'];
   const contractLengths = ['1 month', '3 months', '6 months', '1 year', '2 years', 'Permanent'];
   const visaTypes = ['US Citizen', 'Green Card', 'H1B', 'L1', 'OPT/CPT', 'TN', 'No Sponsorship'];
@@ -485,11 +508,7 @@ const PostJobPage = () => {
             </button>
             <button
               type="button"
-              onClick={(e) => {
-                e.preventDefault();
-                console.log('Job Posted:', formData);
-                alert('Job posted successfully!');
-              }}
+              onClick={handleSubmit}
               className="px-8 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-medium"
             >
               Submit

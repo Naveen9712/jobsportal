@@ -1,12 +1,67 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Clock, DollarSign, Building2, Users, Star, Trash2 } from 'lucide-react';
-import { jobsData, filterOptions, type Job } from '../jobsData';
+
+// Filter options data
+const filterOptions = {
+  jobTypes: ['Full-time', 'Part-time', 'Contract', 'Temporary', 'Internship'] as const,
+  visaTypes: ['H1B', 'H2B', 'L1', 'L2', 'E3', 'TN', 'GC', 'Citizen', 'Other'] as const,
+  workLocations: ['Remote', 'Hybrid', 'Onsite'] as const,
+  states: [
+    { code: 'AL', name: 'Alabama' }, { code: 'AK', name: 'Alaska' }, { code: 'AZ', name: 'Arizona' },
+    { code: 'AR', name: 'Arkansas' }, { code: 'CA', name: 'California' }, { code: 'CO', name: 'Colorado' },
+    { code: 'CT', name: 'Connecticut' }, { code: 'DE', name: 'Delaware' }, { code: 'FL', name: 'Florida' },
+    { code: 'GA', name: 'Georgia' }, { code: 'HI', name: 'Hawaii' }, { code: 'ID', name: 'Idaho' },
+    { code: 'IL', name: 'Illinois' }, { code: 'IN', name: 'Indiana' }, { code: 'IA', name: 'Iowa' },
+    { code: 'KS', name: 'Kansas' }, { code: 'KY', name: 'Kentucky' }, { code: 'LA', name: 'Louisiana' },
+    { code: 'ME', name: 'Maine' }, { code: 'MD', name: 'Maryland' }, { code: 'MA', name: 'Massachusetts' },
+    { code: 'MI', name: 'Michigan' }, { code: 'MN', name: 'Minnesota' }, { code: 'MS', name: 'Mississippi' },
+    { code: 'MO', name: 'Missouri' }, { code: 'MT', name: 'Montana' }, { code: 'NE', name: 'Nebraska' },
+    { code: 'NV', name: 'Nevada' }, { code: 'NH', name: 'New Hampshire' }, { code: 'NJ', name: 'New Jersey' },
+    { code: 'NM', name: 'New Mexico' }, { code: 'NY', name: 'New York' }, { code: 'NC', name: 'North Carolina' },
+    { code: 'ND', name: 'North Dakota' }, { code: 'OH', name: 'Ohio' }, { code: 'OK', name: 'Oklahoma' },
+    { code: 'OR', name: 'Oregon' }, { code: 'PA', name: 'Pennsylvania' }, { code: 'RI', name: 'Rhode Island' },
+    { code: 'SC', name: 'South Carolina' }, { code: 'SD', name: 'South Dakota' }, { code: 'TN', name: 'Tennessee' },
+    { code: 'TX', name: 'Texas' }, { code: 'UT', name: 'Utah' }, { code: 'VT', name: 'Vermont' },
+    { code: 'VA', name: 'Virginia' }, { code: 'WA', name: 'Washington' }, { code: 'WV', name: 'West Virginia' },
+    { code: 'WI', name: 'Wisconsin' }, { code: 'WY', name: 'Wyoming' }
+  ] as const
+};
 
 type JobType = (typeof filterOptions.jobTypes)[number];
 type VisaType = (typeof filterOptions.visaTypes)[number];
 type WorkLocation = (typeof filterOptions.workLocations)[number];
 type StateCode = (typeof filterOptions.states)[number]['code'];
+
+// Database Job interface matching the form data structure
+interface DatabaseJob {
+  _id?: string;  // Changed from id to _id
+  id?: string;   // Keep this for fallback compatibility
+  recruiterName: string;
+  recruiterEmail: string;
+  recruiterPhone: string;
+  sharePhoneNumber: boolean;
+  recruiterCompany: string;
+  jobHeader: string;
+  jobDescription: string;
+  jobRoleName: string;
+  jobPrimaryTechnology: string;
+  jobSecondaryTechnology: string;
+  jobLocationCity: string;
+  jobType: string;
+  jobPayRatePerHour: string;
+  jobContractLength: string;
+  workLocation: {
+    remote: boolean;
+    hybrid: boolean;
+    onsite: boolean;
+  };
+  visaType: string;
+  jobLocationState: string;
+  jobPayRateYearly: string;
+  autoDeleteInDays: string;
+  createdAt?: string;
+}
 
 type SelectedFilters = {
   jobTypes: JobType[];
@@ -15,45 +70,117 @@ type SelectedFilters = {
   states: StateCode[];
 };
 
-
-
 const JobPortal = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [databaseJobs, setDatabaseJobs] = useState<DatabaseJob[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [selectedFilters, setSelectedFilters] = useState<SelectedFilters>({
     jobTypes: [],
     visaTypes: [],
     workLocations: [],
     states: []
   });
+  const [retryCount, setRetryCount] = useState(0);
+
+  // Fetch jobs from database
+  const fetchJobs = async (isRetry = false) => {
+    try {
+      setLoading(true);
+      if (!isRetry) {
+        setError(null);
+        setRetryCount(0);
+      }
+      
+      const response = await fetch('https://joblistings-tk6u.onrender.com/api/jobs', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Fetched jobs:', data);
+        
+        // Fix: Handle the correct response structure
+        const jobsArray = data.jobs || data; // Handle both structures
+        setDatabaseJobs(Array.isArray(jobsArray) ? jobsArray : []);
+        setLastUpdated(new Date());
+      } else {
+        console.error('Response not ok:', response.status, response.statusText);
+        setDatabaseJobs([]);
+        setError(`API Error: ${response.status} ${response.statusText}. Please check your backend server.`);
+      }
+    } catch (error) {
+      console.error('Error fetching jobs:', error);
+      setDatabaseJobs([]);
+      setError(`Network Error: ${error instanceof Error ? error.message : 'Unknown error'}. Please check your backend server.`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRetry = () => {
+    setRetryCount(prev => prev + 1);
+    fetchJobs(true);
+  };
+
+  useEffect(() => {
+    // Ensure the component is mounted before fetching
+    let mounted = true;
+    
+    const loadJobs = async () => {
+      if (mounted) {
+        await fetchJobs();
+      }
+    };
+    
+    loadJobs();
+    
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   // Filter jobs based on selected filters and search query
   const filteredJobs = useMemo(() => {
-    return jobsData.filter((job: Job) => {
+    if (!Array.isArray(databaseJobs)) {
+      return [];
+    }
+    
+    return databaseJobs.filter((job: DatabaseJob) => {
+      if (!job) return false;
+      
       // Search query filter
       const matchesSearch = searchQuery === '' || 
-        job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        job.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        job.location.toLowerCase().includes(searchQuery.toLowerCase());
+        (job.jobHeader && job.jobHeader.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (job.recruiterCompany && job.recruiterCompany.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (job.jobLocationCity && job.jobLocationCity.toLowerCase().includes(searchQuery.toLowerCase()));
 
       // Job type filter
       const matchesJobType = selectedFilters.jobTypes.length === 0 || 
-        selectedFilters.jobTypes.includes(job.jobType as JobType);
+        (job.jobType && selectedFilters.jobTypes.includes(job.jobType as JobType));
 
       // Visa type filter
       const matchesVisaType = selectedFilters.visaTypes.length === 0 || 
-        selectedFilters.visaTypes.includes(job.visaType as VisaType);
+        (job.visaType && selectedFilters.visaTypes.includes(job.visaType as VisaType));
 
       // Work location filter
       const matchesWorkLocation = selectedFilters.workLocations.length === 0 || 
-        selectedFilters.workLocations.includes(job.workLocation as WorkLocation);
+        (job.workLocation && 
+          ((job.workLocation.remote && selectedFilters.workLocations.includes('Remote')) ||
+           (job.workLocation.hybrid && selectedFilters.workLocations.includes('Hybrid')) ||
+           (job.workLocation.onsite && selectedFilters.workLocations.includes('Onsite'))));
 
       // State filter
       const matchesState = selectedFilters.states.length === 0 || 
-        selectedFilters.states.includes(job.state as StateCode);
+        (job.jobLocationState && selectedFilters.states.includes(job.jobLocationState.split(' - ')[1] as StateCode));
 
       return matchesSearch && matchesJobType && matchesVisaType && matchesWorkLocation && matchesState;
     });
-  }, [searchQuery, selectedFilters]);
+  }, [searchQuery, selectedFilters, databaseJobs]);
 
   const handleFilterChange = (
     filterType: 'jobTypes' | 'visaTypes' | 'workLocations' | 'states',
@@ -116,87 +243,139 @@ const JobPortal = () => {
     </label>
   );
 
-  const JobCard = ({ job }: { job: Job }) => (
-    <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
-      {/* Job Header */}
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex items-center space-x-3">
-          <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-            <Building2 className="w-6 h-6 text-gray-600" />
+  const JobCard = ({ job }: { job: DatabaseJob }) => {
+    if (!job) return null;
+    
+    return (
+      <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
+        {/* Job Header */}
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex items-center space-x-3">
+            <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+              <Building2 className="w-6 h-6 text-gray-600" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-gray-900 text-lg">{job.jobHeader || 'No Title'}</h3>
+              <p className="text-blue-600 font-medium">{job.recruiterCompany || 'No Company'}</p>
+            </div>
           </div>
-          <div>
-            <h3 className="font-semibold text-gray-900 text-lg">{job.title}</h3>
-            <p className="text-blue-600 font-medium">{job.company}</p>
+          <button className="text-gray-400 hover:text-gray-600">
+            <Star className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Job Details */}
+        <div className="space-y-2 mb-4">
+          <div className="flex items-center text-gray-600">
+            <MapPin className="w-4 h-4 mr-2" />
+            <span className="text-sm">
+              {job.jobLocationCity || 'No City'}, {job.jobLocationState || 'No State'}
+            </span>
+          </div>
+          <div className="flex items-center text-gray-600">
+            <Clock className="w-4 h-4 mr-2" />
+            <span className="text-sm">Contract: {job.jobContractLength || 'Not specified'}</span>
+          </div>
+          <div className="flex items-center text-green-600 font-medium">
+            <DollarSign className="w-4 h-4 mr-2" />
+            <span className="text-sm">
+              {job.jobPayRatePerHour ? `$${job.jobPayRatePerHour}/hr` : ''}
+              {job.jobPayRateYearly ? `$${job.jobPayRateYearly}/year` : ''}
+              {!job.jobPayRatePerHour && !job.jobPayRateYearly && 'Rate not specified'}
+            </span>
           </div>
         </div>
-        <button className="text-gray-400 hover:text-gray-600">
-          <Star className="w-5 h-5" />
-        </button>
-      </div>
 
-      {/* Job Details */}
-      <div className="space-y-2 mb-4">
-        <div className="flex items-center text-gray-600">
-          <MapPin className="w-4 h-4 mr-2" />
-          <span className="text-sm">{job.location}</span>
+        {/* Job Type Tags */}
+        <div className="flex flex-wrap gap-2 mb-4">
+          <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+            {job.jobType || 'Not specified'}
+          </span>
+          <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">
+            {job.visaType || 'Not specified'}
+          </span>
+          <span className="px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-xs font-medium">
+            {job.workLocation ? 
+              (job.workLocation.remote ? 'Remote' : job.workLocation.hybrid ? 'Hybrid' : 'Onsite') : 
+              'Not specified'
+            }
+          </span>
         </div>
-        <div className="flex items-center text-gray-600">
-          <Clock className="w-4 h-4 mr-2" />
-          <span className="text-sm">Experience: {job.experienceYears}</span>
+
+        {/* Job Description */}
+        <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+          {job.jobDescription || 'No description available'}
+        </p>
+
+        {/* Technologies */}
+        <div className="mb-4">
+          <h4 className="font-medium text-gray-900 mb-2">Technologies</h4>
+          <div className="text-sm text-gray-600">
+            <p><strong>Primary:</strong> {job.jobPrimaryTechnology || 'Not specified'}</p>
+            {job.jobSecondaryTechnology && (
+              <p><strong>Secondary:</strong> {job.jobSecondaryTechnology}</p>
+            )}
+          </div>
         </div>
-        <div className="flex items-center text-green-600 font-medium">
-          <DollarSign className="w-4 h-4 mr-2" />
-          <span className="text-sm">{job.salaryRange}</span>
+
+        {/* Action Buttons */}
+        <div className="flex flex-wrap gap-2 pt-4 border-t border-gray-200">
+          <button className="px-3 py-1 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 transition-colors">
+            Apply
+          </button>
+          <button className="px-3 py-1 bg-gray-100 text-gray-700 rounded-md text-sm hover:bg-gray-200 transition-colors">
+            Save
+          </button>
+          <button className="px-3 py-1 bg-gray-100 text-gray-700 rounded-md text-sm hover:bg-gray-200 transition-colors">
+            Contract
+          </button>
+          <button className="px-3 py-1 bg-red-100 text-red-700 rounded-md text-sm hover:bg-red-200 transition-colors">
+            <Trash2 className="w-3 h-3 inline mr-1" />
+            Remove
+          </button>
+          <button className="px-3 py-1 bg-green-100 text-green-700 rounded-md text-sm hover:bg-green-200 transition-colors">
+            $$$/hour
+          </button>
         </div>
       </div>
+    );
+  };
 
-      {/* Job Type Tags */}
-      <div className="flex flex-wrap gap-2 mb-4">
-        <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
-          {job.jobType}
-        </span>
-        <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">
-          {job.visaType}
-        </span>
-        <span className="px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-xs font-medium">
-          {job.workLocation}
-        </span>
+  // Early return for critical errors
+  if (error && !loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center py-12 max-w-md mx-auto">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span className="text-red-600 text-2xl">!</span>
+          </div>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">Connection Issue</h3>
+          <p className="text-gray-600 mb-4">{error}</p>
+          {retryCount > 0 && (
+            <p className="text-sm text-gray-500 mb-4">Retry attempt: {retryCount}</p>
+          )}
+          <div className="space-x-3">
+            <button 
+              onClick={handleRetry} 
+              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+            >
+              Retry
+            </button>
+            <button 
+              onClick={() => window.location.reload()} 
+              className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors"
+            >
+              Reload Page
+            </button>
+          </div>
+          <div className="mt-4 text-xs text-gray-500">
+            <p>Make sure your backend server is running on http://localhost:3000</p>
+            <p>Check the browser console for more details</p>
+          </div>
+        </div>
       </div>
-
-      {/* Job Description */}
-      <p className="text-gray-600 text-sm mb-4 line-clamp-3">{job.description}</p>
-
-      {/* Key Responsibilities */}
-      <div className="mb-4">
-        <h4 className="font-medium text-gray-900 mb-2">Key Responsibilities</h4>
-        <ul className="text-sm text-gray-600 space-y-1">
-          {job.keyResponsibilities.map((responsibility, index) => (
-            <li key={index}>• {responsibility}</li>
-          ))}
-        </ul>
-      </div>
-
-      {/* Action Buttons */}
-      <div className="flex flex-wrap gap-2 pt-4 border-t border-gray-200">
-        <button className="px-3 py-1 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 transition-colors">
-          Apply
-        </button>
-        <button className="px-3 py-1 bg-gray-100 text-gray-700 rounded-md text-sm hover:bg-gray-200 transition-colors">
-          Save
-        </button>
-        <button className="px-3 py-1 bg-gray-100 text-gray-700 rounded-md text-sm hover:bg-gray-200 transition-colors">
-          Contract
-        </button>
-        <button className="px-3 py-1 bg-red-100 text-red-700 rounded-md text-sm hover:bg-red-200 transition-colors">
-          <Trash2 className="w-3 h-3 inline mr-1" />
-          Remove
-        </button>
-        <button className="px-3 py-1 bg-green-100 text-green-700 rounded-md text-sm hover:bg-green-200 transition-colors">
-          $$$/hour
-        </button>
-      </div>
-    </div>
-  );
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -232,13 +411,13 @@ const JobPortal = () => {
               <div className="relative">
                 <input
                   type="text"
-                  placeholder="Enter your email"
+                  placeholder="Search for jobs, companies, or locations..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full px-4 py-3 rounded-l-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <button className="absolute right-0 top-0 h-full px-6 bg-blue-600 text-white rounded-r-md hover:bg-blue-700 transition-colors">
-                  Get Started
+                  Search Jobs
                 </button>
               </div>
             </div>
@@ -346,28 +525,67 @@ const JobPortal = () => {
                   Find Jobs
                 </button>
               </div>
+              <button 
+                onClick={() => fetchJobs()}
+                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors flex items-center space-x-2"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                <span>Refresh</span>
+              </button>
             </div>
 
             <div className="mb-4">
-              <p className="text-gray-600">
-                Showing {filteredJobs.length} Jobs of {jobsData.length}
-              </p>
+              <div className="flex items-center justify-between">
+                <p className="text-gray-600">
+                  Showing {filteredJobs.length} Jobs of {databaseJobs.length}
+                </p>
+                {lastUpdated && (
+                  <p className="text-sm text-gray-500">
+                    Last updated: {lastUpdated.toLocaleTimeString()}
+                  </p>
+                )}
+              </div>
             </div>
 
+            {/* Loading and Error States */}
+            {loading && (
+              <div className="text-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                <p className="text-gray-600">Loading jobs...</p>
+              </div>
+            )}
+
             {/* Job Cards */}
-            <div className="space-y-6">
-              {filteredJobs.length > 0 ? (
-                filteredJobs.map(job => (
-                  <JobCard key={job.id} job={job} />
-                ))
-              ) : (
-                <div className="text-center py-12">
-                  <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No jobs found</h3>
-                  <p className="text-gray-600">Try adjusting your filters or search query to see more results.</p>
-                </div>
-              )}
-            </div>
+            {!loading && (
+              <div className="space-y-6">
+                {filteredJobs.length > 0 ? (
+                  filteredJobs.map(job => (
+                    <JobCard key={job._id || job.id || `job-${Math.random()}`} job={job} />
+                  ))
+                ) : (
+                  <div className="text-center py-12">
+                    <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">No jobs found</h3>
+                    <p className="text-gray-600">
+                      {databaseJobs.length === 0 
+                        ? 'No jobs available. Please check back later or contact support if the issue persists.'
+                        : 'Try adjusting your filters or search query to see more results.'
+                      }
+                    </p>
+                    {databaseJobs.length === 0 && (
+                      <button 
+                        onClick={() => fetchJobs()}
+                        className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+                      >
+                        Try Again
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Load More Button */}
             {filteredJobs.length > 0 && (
@@ -384,4 +602,4 @@ const JobPortal = () => {
   );
 };
 
-export default JobPortal;
+export default JobPortal; 
