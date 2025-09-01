@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { User, Briefcase } from 'lucide-react';
+import { API_CONFIG } from '../config/api';
 
 const PostJobPage = () => {
   const [formData, setFormData] = useState({
@@ -84,7 +85,7 @@ const PostJobPage = () => {
   };
   const handleSubmit = async () => {
     try {
-      const response = await fetch('https://joblistings-tk6u.onrender.com/api/jobs', {
+      const response = await fetch(API_CONFIG.JOBS_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
