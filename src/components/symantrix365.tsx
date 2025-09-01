@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Clock, DollarSign, Building2, Users, Star, Trash2 } from 'lucide-react';
+import { API_CONFIG } from '../config/api';
 
 // Filter options data
 const filterOptions = {
@@ -93,7 +94,7 @@ const JobPortal = () => {
         setRetryCount(0);
       }
       
-      const response = await fetch('https://joblistings-tk6u.onrender.com/api/jobs', {
+      const response = await fetch(API_CONFIG.JOBS_URL, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -369,7 +370,7 @@ const JobPortal = () => {
             </button>
           </div>
           <div className="mt-4 text-xs text-gray-500">
-            <p>Make sure your backend server is running on http://localhost:3000</p>
+            <p>Make sure your backend server is running on {API_CONFIG.BASE_URL}</p>
             <p>Check the browser console for more details</p>
           </div>
         </div>
