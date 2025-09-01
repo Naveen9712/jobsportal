@@ -370,7 +370,7 @@ const JobPortal = () => {
             </button>
           </div>
           <div className="mt-4 text-xs text-gray-500">
-            <p>Make sure your backend server is running on {API_CONFIG.BASE_URL}</p>
+            <p>Make sure your backend server is running and accessible</p>
             <p>Check the browser console for more details</p>
           </div>
         </div>

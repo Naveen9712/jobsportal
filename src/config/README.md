@@ -19,9 +19,8 @@ const healthUrl = API_CONFIG.HEALTH_URL;
 
 ### Configuration Structure
 
-- **BASE_URL**: The base URL for the API (`https://joblistings-tk6u.onrender.com`)
-- **ENDPOINTS**: Object containing all API endpoint paths
-- **URL Getters**: Convenient getter methods for full API URLs
+- **ENDPOINTS**: Object containing all API endpoint paths (relative URLs)
+- **URL Getters**: Convenient getter methods that return relative URLs to avoid CORS issues
 
 ### Available Endpoints
 
