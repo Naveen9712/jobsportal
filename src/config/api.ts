@@ -1,5 +1,8 @@
 // API Configuration
 export const API_CONFIG = {
+  // Base URL for the API
+  BASE_URL: 'https://joblistings-tk6u.onrender.com',
+  
   // API Endpoints
   ENDPOINTS: {
     JOBS: '/api/jobs',
@@ -7,16 +10,16 @@ export const API_CONFIG = {
     HEALTH: '/api/health',
   },
   
-  // Use relative URLs to avoid CORS issues
+  // Full API URLs
   get JOBS_URL() {
-    return this.ENDPOINTS.JOBS;
+    return `${this.BASE_URL}${this.ENDPOINTS.JOBS}`;
   },
   
   get STATS_URL() {
-    return this.ENDPOINTS.STATS;
+    return `${this.BASE_URL}${this.ENDPOINTS.STATS}`;
   },
   
   get HEALTH_URL() {
-    return this.ENDPOINTS.HEALTH;
+    return `${this.BASE_URL}${this.ENDPOINTS.HEALTH}`;
   },
 } as const;
