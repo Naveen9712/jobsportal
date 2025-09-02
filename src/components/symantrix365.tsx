@@ -84,6 +84,7 @@ const JobPortal = () => {
     states: []
   });
   const [retryCount, setRetryCount] = useState(0);
+  const [visibleCount, setVisibleCount] = useState(10);
 
   // Fetch jobs from database
   const fetchJobs = async (isRetry = false) => {
@@ -94,7 +95,9 @@ const JobPortal = () => {
         setRetryCount(0);
       }
       
-      const response = await fetch(API_CONFIG.JOBS_URL, {
+      // Try requesting a higher limit so more than 10 jobs are returned (backend may default to 10)
+      const url = `${API_CONFIG.JOBS_URL}?limit=100`;
+      const response = await fetch(url, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -109,6 +112,8 @@ const JobPortal = () => {
         const jobsArray = data.jobs || data; // Handle both structures
         setDatabaseJobs(Array.isArray(jobsArray) ? jobsArray : []);
         setLastUpdated(new Date());
+        // Reset visible count on new data load
+        setVisibleCount(10);
       } else {
         console.error('Response not ok:', response.status, response.statusText);
         setDatabaseJobs([]);
@@ -144,6 +149,11 @@ const JobPortal = () => {
       mounted = false;
     };
   }, []);
+
+  // Reset visible items when filters or search change
+  useEffect(() => {
+    setVisibleCount(10);
+  }, [searchQuery, selectedFilters]);
 
   // Filter jobs based on selected filters and search query
   const filteredJobs = useMemo(() => {
@@ -321,12 +331,6 @@ const JobPortal = () => {
 
         {/* Action Buttons */}
         <div className="flex flex-wrap gap-2 pt-4 border-t border-gray-200">
-          <button className="px-3 py-1 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 transition-colors">
-            Apply
-          </button>
-          <button className="px-3 py-1 bg-gray-100 text-gray-700 rounded-md text-sm hover:bg-gray-200 transition-colors">
-            Save
-          </button>
           <button className="px-3 py-1 bg-gray-100 text-gray-700 rounded-md text-sm hover:bg-gray-200 transition-colors">
             Contract
           </button>
@@ -540,7 +544,7 @@ const JobPortal = () => {
             <div className="mb-4">
               <div className="flex items-center justify-between">
                 <p className="text-gray-600">
-                  Showing {filteredJobs.length} Jobs of {databaseJobs.length}
+                  Showing {Math.min(visibleCount, filteredJobs.length)} Jobs of {databaseJobs.length}
                 </p>
                 {lastUpdated && (
                   <p className="text-sm text-gray-500">
@@ -562,7 +566,7 @@ const JobPortal = () => {
             {!loading && (
               <div className="space-y-6">
                 {filteredJobs.length > 0 ? (
-                  filteredJobs.map(job => (
+                  filteredJobs.slice(0, visibleCount).map(job => (
                     <JobCard key={job._id || job.id || `job-${Math.random()}`} job={job} />
                   ))
                 ) : (
@@ -589,9 +593,12 @@ const JobPortal = () => {
             )}
 
             {/* Load More Button */}
-            {filteredJobs.length > 0 && (
+            {filteredJobs.length > 0 && visibleCount < filteredJobs.length && (
               <div className="text-center mt-8">
-                <button className="bg-gray-100 text-gray-700 px-6 py-2 rounded-md hover:bg-gray-200 transition-colors">
+                <button 
+                  className="bg-gray-100 text-gray-700 px-6 py-2 rounded-md hover:bg-gray-200 transition-colors"
+                  onClick={() => setVisibleCount(prev => Math.min(prev + 10, filteredJobs.length))}
+                >
                   Load More
                 </button>
               </div>
