@@ -1,7 +1,9 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { User, Briefcase } from 'lucide-react';
 import { API_CONFIG } from '../config/api';
+import Header from './Header';
+import Hero from './Hero';
+import Footer from './Footer';
 
 const PostJobPage = () => {
   const [formData, setFormData] = useState({
@@ -128,46 +130,13 @@ const PostJobPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-8">
-              <div className="text-2xl font-bold text-blue-600">Symantrix365</div>
-              <nav className="hidden md:flex space-x-8">
-                <Link to="/" className="text-gray-700 hover:text-blue-600 transition-colors">Search Job</Link>
-                <Link to="/post-job" className="text-blue-600 font-medium">Post Job</Link>
-                <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors">Company</a>
-                <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors">Contact</a>
-              </nav>
-            </div>
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
-              Sign In
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-900 to-blue-700 text-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-2 gap-8 items-center">
-            <div>
-              <h1 className="text-4xl md:text-5xl font-bold mb-4">Post a Job</h1>
-              <p className="text-xl text-blue-100 mb-8">
-                Have a job and want job seekers to apply. Fill your job details and we will reach out to you!
-              </p>
-            </div>
-            <div className="flex justify-center">
-              <div className="w-32 h-48 bg-gradient-to-b from-yellow-400 to-orange-500 rounded-t-full relative">
-                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-16 h-16 bg-yellow-300 rounded-full"></div>
-                <div className="absolute bottom-0 w-full h-32 bg-gray-700 rounded-t-lg"></div>
-                <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 w-20 h-16 bg-gray-600 rounded"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <Header activePage="post" />
+      
+      <Hero 
+        title="Post a Job"
+        subtitle="Have a job and want job seekers to apply. Fill your job details and we will reach out to you!"
+        showSearch={false}
+      />
 
       {/* Form Section */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -518,28 +487,7 @@ const PostJobPage = () => {
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="bg-white border-t border-gray-200 mt-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex items-center justify-between mb-6">
-            <div className="text-2xl font-bold text-blue-600">Symantrix365</div>
-            <div className="flex space-x-8 text-sm text-gray-600">
-              <a href="#" className="hover:text-blue-600 transition-colors">Overview</a>
-              <a href="#" className="hover:text-blue-600 transition-colors">Feature</a>
-              <a href="#" className="hover:text-blue-600 transition-colors">Help</a>
-              <a href="#" className="hover:text-blue-600 transition-colors">Privacy</a>
-            </div>
-          </div>
-          <div className="flex justify-between items-center text-sm text-gray-500">
-            <p>© 2025 Symantrix365. All rights reserved.</p>
-            <div className="flex space-x-6">
-              <a href="#" className="hover:text-blue-600 transition-colors">Privacy policy</a>
-              <a href="#" className="hover:text-blue-600 transition-colors">Terms of service</a>
-              <a href="#" className="hover:text-blue-600 transition-colors">Legal notice</a>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };
