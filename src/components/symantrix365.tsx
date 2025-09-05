@@ -86,6 +86,7 @@ const JobPortal = () => {
   });
   const [retryCount, setRetryCount] = useState(0);
   const [visibleCount, setVisibleCount] = useState(10);
+  const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
 
   // Fetch jobs from database
   const fetchJobs = async (isRetry = false) => {
@@ -396,11 +397,100 @@ const JobPortal = () => {
         onSearchSubmit={() => {}}
       />
 
+      {/* Mobile Filters Drawer */}
+      {isMobileFiltersOpen && (
+        <div className="fixed inset-0 z-50 md:hidden">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setIsMobileFiltersOpen(false)}></div>
+          <div className="absolute inset-y-0 left-0 w-full max-w-sm bg-white shadow-xl transform transition-transform duration-300 ease-out">
+            <div className="flex items-center justify-between p-4 border-b">
+              <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
+              <div className="flex items-center gap-3">
+                <button 
+                  onClick={clearFilters}
+                  className="text-blue-600 text-sm hover:text-blue-700"
+                >
+                  Reset
+                </button>
+                <button
+                  aria-label="Close filters"
+                  className="p-2 rounded hover:bg-gray-100"
+                  onClick={() => setIsMobileFiltersOpen(false)}
+                >
+                  <svg className="h-5 w-5 text-gray-700" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6 6L18 18M6 18L18 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div className="p-4 overflow-x-auto">
+              <div className="flex gap-4 min-w-full">
+                {/* Job Type */}
+                <div className="min-w-[16rem] bg-white border border-gray-200 rounded-lg p-4">
+                  <h3 className="font-medium text-gray-900 mb-3">Job Type</h3>
+                  <div className="space-y-2">
+                    {filterOptions.jobTypes.map(type => (
+                      <FilterCheckbox
+                        key={type}
+                        label={type}
+                        checked={selectedFilters.jobTypes.includes(type)}
+                        onChange={() => handleFilterChange('jobTypes', type)}
+                      />
+                    ))}
+                  </div>
+                </div>
+                {/* Visa Type */}
+                <div className="min-w-[16rem] bg-white border border-gray-200 rounded-lg p-4">
+                  <h3 className="font-medium text-gray-900 mb-3">Visa Type</h3>
+                  <div className="space-y-2">
+                    {filterOptions.visaTypes.map(type => (
+                      <FilterCheckbox
+                        key={type}
+                        label={type}
+                        checked={selectedFilters.visaTypes.includes(type)}
+                        onChange={() => handleFilterChange('visaTypes', type)}
+                      />
+                    ))}
+                  </div>
+                </div>
+                {/* Work Location */}
+                <div className="min-w-[16rem] bg-white border border-gray-200 rounded-lg p-4">
+                  <h3 className="font-medium text-gray-900 mb-3">Work Location</h3>
+                  <div className="space-y-2">
+                    {filterOptions.workLocations.map(location => (
+                      <FilterCheckbox
+                        key={location}
+                        label={location}
+                        checked={selectedFilters.workLocations.includes(location)}
+                        onChange={() => handleFilterChange('workLocations', location)}
+                      />
+                    ))}
+                  </div>
+                </div>
+                {/* States */}
+                <div className="min-w-[16rem] bg-white border border-gray-200 rounded-lg p-4">
+                  <h3 className="font-medium text-gray-900 mb-3">Job Location States</h3>
+                  <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+                    {filterOptions.states.map(state => (
+                      <FilterCheckbox
+                        key={state.code}
+                        label={`${state.name} - ${state.code}`}
+                        checked={selectedFilters.states.includes(state.code)}
+                        onChange={() => handleFilterChange('states', state.code)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid lg:grid-cols-4 gap-8">
-          {/* Filters Sidebar */}
-          <div className="lg:col-span-1">
+          {/* Filters Sidebar (desktop) */}
+          <div className="hidden lg:block lg:col-span-1">
             <div className="bg-white rounded-lg shadow-sm p-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
@@ -478,14 +568,20 @@ const JobPortal = () => {
           <div className="lg:col-span-3">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center space-x-4">
+                <button 
+                  className="md:hidden px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                  onClick={() => setIsMobileFiltersOpen(true)}
+                >
+                  Filters
+                </button>
                 <input
                   type="text"
                   placeholder="Title, skill or company"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 w-64"
+                  className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 w-40 sm:w-64"
                 />
-                <button className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors">
+                <button className="hidden sm:inline-flex bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors">
                   Find Jobs
                 </button>
               </div>
