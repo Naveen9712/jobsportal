@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { User, Briefcase } from 'lucide-react';
 import { API_CONFIG } from '../config/api';
 import Header from './Header';
@@ -6,6 +7,7 @@ import Hero from './Hero';
 import Footer from './Footer';
 
 const PostJobPage = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     recruiterName: '',
     recruiterEmail: '',
@@ -87,11 +89,9 @@ const PostJobPage = () => {
   };
   const handleSubmit = async () => {
     try {
-      const response = await fetch(API_CONFIG.JOBS_URL, {
+      const response = await fetch(API_CONFIG.CREATE_URL, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
       
@@ -100,6 +100,8 @@ const PostJobPage = () => {
       if (response.ok) {
         alert('Job posted successfully!');
         handleClear(); // Clear the form
+        // Redirect to listings page
+        navigate('/', { replace: true });
       } else {
         alert(`Error: ${data.message || 'Failed to post job'}`);
         console.error('Validation errors:', data.errors);

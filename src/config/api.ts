@@ -1,25 +1,11 @@
 // API Configuration
 export const API_CONFIG = {
-  // Base URL for the API
-  BASE_URL: 'https://joblistings-tk6u.onrender.com',
-  
-  // API Endpoints
-  ENDPOINTS: {
-    JOBS: '/api/jobs',
-    STATS: '/api/stats',
-    HEALTH: '/api/health',
-  },
-  
-  // Full API URLs
-  get JOBS_URL() {
-    return `${this.BASE_URL}${this.ENDPOINTS.JOBS}`;
-  },
-  
-  get STATS_URL() {
-    return `${this.BASE_URL}${this.ENDPOINTS.STATS}`;
-  },
-  
-  get HEALTH_URL() {
-    return `${this.BASE_URL}${this.ENDPOINTS.HEALTH}`;
-  },
+  // Replace with your actual WordPress domain
+  BASE_URL: 'https://pncreators.com/wp-json/jobs/v1',
+
+  // Full endpoints
+  CREATE_URL: 'https://pncreators.com/wp-json/jobs/v1/create',
+  LIST_URL: 'https://pncreators.com/wp-json/jobs/v1/list',
+  // Use as `${API_CONFIG.SINGLE_URL}/${jobId}`
+  SINGLE_URL: 'https://pncreators.com/wp-json/jobs/v1',
 } as const;

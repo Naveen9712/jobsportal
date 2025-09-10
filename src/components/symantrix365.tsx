@@ -37,8 +37,7 @@ type StateCode = (typeof filterOptions.states)[number]['code'];
 
 // Database Job interface matching the form data structure
 interface DatabaseJob {
-  _id?: string;  // Changed from id to _id
-  id?: string;   // Keep this for fallback compatibility
+  id?: string | number; // MySQL primary key
   recruiterName: string;
   recruiterEmail: string;
   recruiterPhone: string;
@@ -51,7 +50,7 @@ interface DatabaseJob {
   jobSecondaryTechnology: string;
   jobLocationCity: string;
   jobType: string;
-  jobPayRatePerHour: string;
+  jobPayRatePerHour: string; // Change to number if MySQL uses numeric type
   jobContractLength: string;
   workLocation: {
     remote: boolean;
@@ -60,7 +59,7 @@ interface DatabaseJob {
   };
   visaType: string;
   jobLocationState: string;
-  jobPayRateYearly: string;
+  jobPayRateYearly: string; // Change to number if MySQL uses numeric type
   autoDeleteInDays: string;
   createdAt?: string;
 }
@@ -70,6 +69,45 @@ type SelectedFilters = {
   visaTypes: VisaType[];
   workLocations: WorkLocation[];
   states: StateCode[];
+};
+
+// Transform API payload (snake_case) to UI-friendly camelCase shape
+const transformJobFromApi = (apiJob: any): DatabaseJob => {
+  if (!apiJob || typeof apiJob !== 'object') {
+    return {} as DatabaseJob;
+  }
+
+  // Handle work_location coming as an array like ["Remote","Hybrid","Onsite"]
+  const workLocationArray: string[] = Array.isArray(apiJob.work_location) ? apiJob.work_location : [];
+  const workLocation = {
+    remote: workLocationArray.includes('Remote'),
+    hybrid: workLocationArray.includes('Hybrid'),
+    onsite: workLocationArray.includes('Onsite'),
+  };
+
+  return {
+    id: apiJob.id,
+    recruiterName: apiJob.recruiter_name ?? '',
+    recruiterEmail: apiJob.recruiter_email ?? '',
+    recruiterPhone: apiJob.recruiter_phone ?? '',
+    sharePhoneNumber: Boolean(apiJob.share_phone_number ?? false),
+    recruiterCompany: apiJob.recruiter_company ?? '',
+    jobHeader: apiJob.job_header ?? '',
+    jobDescription: apiJob.job_description ?? '',
+    jobRoleName: apiJob.job_role_name ?? '',
+    jobPrimaryTechnology: apiJob.job_primary_technology ?? '',
+    jobSecondaryTechnology: apiJob.job_secondary_technology ?? '',
+    jobLocationCity: apiJob.job_location_city ?? '',
+    jobType: apiJob.job_type ?? '',
+    jobPayRatePerHour: String(apiJob.job_pay_rate_hourly ?? ''),
+    jobContractLength: apiJob.job_contract_length ?? '',
+    workLocation,
+    visaType: apiJob.visa_type ?? '',
+    jobLocationState: apiJob.job_location_state ?? '',
+    jobPayRateYearly: String(apiJob.job_pay_rate_yearly ?? ''),
+    autoDeleteInDays: apiJob.auto_delete_in_days ?? '',
+    createdAt: apiJob.date_created ?? apiJob.created_at ?? undefined,
+  };
 };
 
 const JobPortal = () => {
@@ -98,7 +136,7 @@ const JobPortal = () => {
       }
       
       // Try requesting a higher limit so more than 10 jobs are returned (backend may default to 10)
-      const url = `${API_CONFIG.JOBS_URL}?limit=100`;
+      const url = `${API_CONFIG.LIST_URL}?limit=100`;
       const response = await fetch(url, {
         method: 'GET',
         headers: {
@@ -109,10 +147,11 @@ const JobPortal = () => {
       if (response.ok) {
         const data = await response.json();
         console.log('Fetched jobs:', data);
-        
-        // Fix: Handle the correct response structure
-        const jobsArray = data.jobs || data; // Handle both structures
-        setDatabaseJobs(Array.isArray(jobsArray) ? jobsArray : []);
+
+        // Accept either { jobs: [...] } or [...] and normalize + transform keys
+        const rawJobs = Array.isArray(data) ? data : (Array.isArray(data?.jobs) ? data.jobs : []);
+        const normalizedJobs: DatabaseJob[] = rawJobs.map(transformJobFromApi);
+        setDatabaseJobs(normalizedJobs);
         setLastUpdated(new Date());
         // Reset visible count on new data load
         setVisibleCount(10);
@@ -622,7 +661,7 @@ const JobPortal = () => {
               <div className="space-y-6">
                 {filteredJobs.length > 0 ? (
                   filteredJobs.slice(0, visibleCount).map(job => (
-                    <JobCard key={job._id || job.id || `job-${Math.random()}`} job={job} />
+                    <JobCard key={job.id || `job-${Math.random()}`} job={job} />
                   ))
                 ) : (
                   <div className="text-center py-12">
@@ -665,4 +704,4 @@ const JobPortal = () => {
   );
 };
 
-export default JobPortal; 
+export default JobPortal;
