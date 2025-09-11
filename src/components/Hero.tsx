@@ -33,7 +33,8 @@ const Hero = ({
                 />
                 <button 
                   onClick={onSearchSubmit}
-                  className="sm:ml-0 sm:self-stretch sm:h-auto px-6 py-3 bg-blue-600 text-white rounded-md sm:rounded-r-md sm:rounded-l-none hover:bg-blue-700 transition-colors"
+                  className="sm:ml-0 sm:self-stretch sm:h-auto px-6 py-3 bg-blue-600 text-white rounded-md sm:rounded-r-md sm:rounded-l-none hover:bg-blue-700 transition-colors search-jobs-btn"
+                  style={{width: '40%'}}
                 >
                   Search Jobs
                 </button>

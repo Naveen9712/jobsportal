@@ -1,8 +1,10 @@
 import { useState, useMemo, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { MapPin, Clock, DollarSign, Building2, Users, Star, Trash2 } from 'lucide-react';
 import { API_CONFIG } from '../config/api';
 import Header from './Header';
 import Hero from './Hero';
+import Footer from './Footer';
 
 // Filter options data
 const filterOptions = {
@@ -299,7 +301,7 @@ const JobPortal = () => {
     if (!job) return null;
     
     return (
-      <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
+      <Link to={`/jobs/${job.id}`} className="block bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
         {/* Job Header */}
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center space-x-3">
@@ -383,7 +385,7 @@ const JobPortal = () => {
             $$$/hour
           </button>
         </div>
-      </div>
+      </Link>
     );
   };
 
@@ -700,6 +702,7 @@ const JobPortal = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };
