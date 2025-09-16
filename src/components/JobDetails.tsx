@@ -56,13 +56,14 @@ const transformJobFromApi = (apiJob: any): DatabaseJob => {
     hybrid: workLocationArray.includes('Hybrid'),
     onsite: workLocationArray.includes('Onsite'),
   };
+  console.log(apiJob);
 
   return {
     id: apiJob?.id,
     recruiterName: apiJob?.recruiter_name ?? '',
     recruiterEmail: apiJob?.recruiter_email ?? '',
     recruiterPhone: apiJob?.recruiter_phone ?? '',
-    sharePhoneNumber: Boolean(apiJob?.share_phone_number ?? false),
+    sharePhoneNumber: Boolean(apiJob?.share_phone_number ?? true),
     recruiterCompany: apiJob?.recruiter_company ?? '',
     jobHeader: apiJob?.job_header ?? '',
     jobDescription: apiJob?.job_description ?? '',
@@ -71,12 +72,12 @@ const transformJobFromApi = (apiJob: any): DatabaseJob => {
     jobSecondaryTechnology: apiJob?.job_secondary_technology ?? '',
     jobLocationCity: apiJob?.job_location_city ?? '',
     jobType: apiJob?.job_type ?? '',
-    jobPayRatePerHour: String(apiJob?.job_pay_rate_hourly ?? ''),
+    jobPayRatePerHour: apiJob?.job_pay_rate_per_hour ? String(apiJob.job_pay_rate_per_hour).trim() : '',
     jobContractLength: apiJob?.job_contract_length ?? '',
     workLocation,
     visaType: apiJob?.visa_type ?? '',
     jobLocationState: apiJob?.job_location_state ?? '',
-    jobPayRateYearly: String(apiJob?.job_pay_rate_yearly ?? ''),
+    jobPayRateYearly: apiJob?.job_pay_rate_yearly ? String(apiJob.job_pay_rate_yearly).trim() : '',
     autoDeleteInDays: apiJob?.auto_delete_in_days ?? '',
     createdAt: apiJob?.date_created ?? apiJob?.created_at ?? undefined,
   };
@@ -260,7 +261,7 @@ const JobDetails = () => {
                   </div>
                   <p className="text-sm text-gray-600 mb-1">Hourly Rate</p>
                   <p className="font-bold text-green-700">
-                    {job.jobPayRatePerHour ? `$${job.jobPayRatePerHour}/hr` : 'Not provided'}
+                    {job.jobPayRatePerHour && job.jobPayRatePerHour.trim() !== '' ? `$${job.jobPayRatePerHour}/hr` : 'Not provided'}
                   </p>
                 </div>
                 
@@ -339,13 +340,13 @@ const JobDetails = () => {
                 Compensation Details
               </h3>
               <div className="space-y-3">
-                {job.jobPayRatePerHour && (
+                {job.jobPayRatePerHour && job.jobPayRatePerHour.trim() !== '' && (
                   <div className="flex justify-between items-center py-3 px-4 bg-green-50 rounded-lg border border-green-200">
                     <span className="text-gray-700 font-medium">Hourly Rate</span>
                     <span className="font-bold text-green-600">${job.jobPayRatePerHour}/hr</span>
                   </div>
                 )}
-                {job.jobPayRateYearly && (
+                {job.jobPayRateYearly && job.jobPayRateYearly.trim() !== '' && (
                   <div className="flex justify-between items-center py-3 px-4 bg-green-50 rounded-lg border border-green-200">
                     <span className="text-gray-700 font-medium">Annual Salary</span>
                     <span className="font-bold text-green-600">${job.jobPayRateYearly}/year</span>

@@ -12,7 +12,7 @@ const PostJobPage = () => {
     recruiterName: '',
     recruiterEmail: '',
     recruiterPhone: '',
-    sharePhoneNumber: false,
+    sharePhoneNumber: true,
     recruiterCompany: '',
     jobHeader: '',
     jobDescription: '',
@@ -114,7 +114,14 @@ const PostJobPage = () => {
   const jobTypes = ['Full-time', 'Part-time', 'Contract', 'Internship', 'Freelance'];
   const contractLengths = ['1 month', '3 months', '6 months', '1 year', '2 years', 'Permanent'];
   const visaTypes = ['US Citizen', 'Green Card', 'H1B', 'L1', 'OPT/CPT', 'TN', 'No Sponsorship'];
-  const autoDeleteOptions = ['30 days', '60 days', '90 days', 'Never'];
+  const autoDeleteOptions = [
+    { value: '1min', label: '1 minute (test)' },
+    { value: '1', label: '1 day' },
+    { value: '3', label: '3 days' },
+    { value: '7', label: '7 days' },
+    { value: '15', label: '15 days' },
+    { value: '30', label: '30 days' }
+  ];
   
   const states = [
     'Alabama - AL', 'Alaska - AK', 'Arizona - AZ', 'Arkansas - AR', 'California - CA',
@@ -462,7 +469,7 @@ const PostJobPage = () => {
                 >
                   <option value="">Select</option>
                   {autoDeleteOptions.map(option => (
-                    <option key={option} value={option}>{option}</option>
+                    <option key={option.value} value={option.value}>{option.label}</option>
                   ))}
                 </select>
               </div>
