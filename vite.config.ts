@@ -7,7 +7,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://joblistings-tk6u.onrender.com',
+        target: 'https://pncreators.com/',
         changeOrigin: true,
         secure: true,
       }
