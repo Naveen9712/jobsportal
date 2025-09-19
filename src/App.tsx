@@ -15,6 +15,7 @@ const App: React.FC = () => {
       <Route path="/company" element={<CompanyPage />} />
       <Route path="/contact" element={<ContactPage />} />
       <Route path="/jobs/:id" element={<JobDetails />} />
+      {/* catch-all route */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
