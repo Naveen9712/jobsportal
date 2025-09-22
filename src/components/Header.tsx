@@ -76,13 +76,10 @@ const Header = ({ activePage }: HeaderProps) => {
           <div className="hidden md:flex items-center space-x-2">
             <Link 
               to="/admin/login" 
-              className="text-gray-700 hover:text-blue-600 transition-colors"
+              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
             >
-              Admin
+              Admin SignIn
             </Link>
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
-              Sign In
-            </button>
           </div>
         </div>
 
@@ -137,16 +134,10 @@ const Header = ({ activePage }: HeaderProps) => {
               <Link 
                 to="/admin/login" 
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="px-2 py-2 rounded transition-colors text-gray-700 hover:bg-gray-50"
-              >
-                Admin
-              </Link>
-              <button
-                onClick={() => setIsMobileMenuOpen(false)}
                 className="mt-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
               >
-                Sign In
-              </button>
+                Admin SignIn
+              </Link>
             </nav>
           </div>
         )}
