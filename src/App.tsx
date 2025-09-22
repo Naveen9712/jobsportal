@@ -6,6 +6,9 @@ import JobDetails from './components/JobDetails';
 import PostJobPage from './components/jobPost';
 import CompanyPage from './components/companyPage';
 import ContactPage from './components/conatctPage';
+import AdminLogin from './components/adminLogin';
+import AdminDashboard from './components/adminDashboard';
+import ProtectedRoute from './components/protectedRoute';
 
 const App: React.FC = () => {
   return (
@@ -15,6 +18,18 @@ const App: React.FC = () => {
       <Route path="/company" element={<CompanyPage />} />
       <Route path="/contact" element={<ContactPage />} />
       <Route path="/jobs/:id" element={<JobDetails />} />
+      
+      {/* Admin Routes */}
+      <Route path="/admin/login" element={<AdminLogin />} />
+      <Route 
+        path="/admin/dashboard" 
+        element={
+          <ProtectedRoute>
+            <AdminDashboard />
+          </ProtectedRoute>
+        } 
+      />
+      
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

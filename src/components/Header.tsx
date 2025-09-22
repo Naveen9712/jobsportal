@@ -2,7 +2,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useState } from 'react';
 
 interface HeaderProps {
-  activePage?: 'search' | 'post' | 'company' | 'contact';
+  activePage?: 'search' | 'post' | 'company' | 'contact' | 'admin';
 }
 
 const Header = ({ activePage }: HeaderProps) => {
@@ -12,7 +12,8 @@ const Header = ({ activePage }: HeaderProps) => {
     location.pathname === '/' ? 'search' :
     location.pathname.startsWith('/post-job') ? 'post' :
     location.pathname.startsWith('/company') ? 'company' :
-    location.pathname.startsWith('/contact') ? 'contact' : undefined
+    location.pathname.startsWith('/contact') ? 'contact' :
+    location.pathname.startsWith('/admin') ? 'admin' : undefined
   );
   return (
     <header className="bg-white shadow-sm border-b">
@@ -72,9 +73,17 @@ const Header = ({ activePage }: HeaderProps) => {
               </Link>
             </nav>
           </div>
-          <button className="hidden md:inline-flex bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
-            Sign In
-          </button>
+          <div className="hidden md:flex items-center space-x-2">
+            <Link 
+              to="/admin/login" 
+              className="text-gray-700 hover:text-blue-600 transition-colors"
+            >
+              Admin
+            </Link>
+            <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
+              Sign In
+            </button>
+          </div>
         </div>
 
         {/* Mobile menu */}
@@ -124,6 +133,13 @@ const Header = ({ activePage }: HeaderProps) => {
                 }`}
               >
                 Contact
+              </Link>
+              <Link 
+                to="/admin/login" 
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="px-2 py-2 rounded transition-colors text-gray-700 hover:bg-gray-50"
+              >
+                Admin
               </Link>
               <button
                 onClick={() => setIsMobileMenuOpen(false)}
