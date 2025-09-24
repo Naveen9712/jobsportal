@@ -9,6 +9,7 @@ import ContactPage from './components/conatctPage';
 import AdminLogin from './components/adminLogin';
 import AdminDashboard from './components/adminDashboard';
 import ProtectedRoute from './components/protectedRoute';
+import AdminJobUpdate from './components/adminJobUpdate';
 
 const App: React.FC = () => {
   return (
@@ -26,6 +27,14 @@ const App: React.FC = () => {
         element={
           <ProtectedRoute>
             <AdminDashboard />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/admin/jobs/:id/edit" 
+        element={
+          <ProtectedRoute>
+            <AdminJobUpdate />
           </ProtectedRoute>
         } 
       />

@@ -517,7 +517,7 @@ const AdminDashboard = () => {
                             {job.pinned ? <PinOff className="w-4 h-4" /> : <Pin className="w-4 h-4" />}
                           </button>
                           <button
-                            onClick={() => {/* TODO: Implement edit functionality */}}
+                            onClick={() => navigate(`/admin/jobs/${job.id}/edit`)}
                             className="p-1 rounded hover:bg-gray-100 text-blue-600"
                             title="Edit"
                           >
