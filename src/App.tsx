@@ -1,15 +1,15 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import './styles/App.css';
-import JobPortal from './components/symantrix365';
-import JobDetails from './components/JobDetails';
-import PostJobPage from './components/jobPost';
-import CompanyPage from './components/companyPage';
-import ContactPage from './components/conatctPage';
-import AdminLogin from './components/adminLogin';
-import AdminDashboard from './components/adminDashboard';
-import ProtectedRoute from './components/protectedRoute';
-import AdminJobUpdate from './components/adminJobUpdate';
+import JobPortal from './components/job/symantrix365';
+import JobDetails from './components/job/JobDetails';
+import PostJobPage from './components/job/jobPost';
+import CompanyPage from './components/pages/companyPage';
+import ContactPage from './components/pages/conatctPage';
+import AdminLogin from './components/admin/adminLogin';
+import AdminDashboard from './components/admin/adminDashboard';
+import ProtectedRoute from './components/auth/protectedRoute';
+import AdminJobUpdate from './components/admin/adminJobUpdate';
 
 const App: React.FC = () => {
   return (

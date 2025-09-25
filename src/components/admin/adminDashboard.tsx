@@ -5,9 +5,9 @@ import {
   LogOut, Search, ChevronLeft, ChevronRight,
   AlertCircle, TrendingUp, Calendar
 } from 'lucide-react';
-import { API_CONFIG, getAuthHeaders } from '../config/api';
-import Header from './Header';
-import Footer from './Footer';
+import { API_CONFIG, getAuthHeaders } from '../../config/api';
+import Header from '../layout/Header';
+import Footer from '../layout/Footer';
 
 interface Job {
   id: number;

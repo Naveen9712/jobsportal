@@ -1,10 +1,10 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { MapPin, Clock, DollarSign, Building2, Users, Star, Trash2 } from 'lucide-react';
-import { API_CONFIG } from '../config/api';
-import Header from './Header';
-import Hero from './Hero';
-import Footer from './Footer';
+import { MapPin, Clock, DollarSign, Building2, Users, Star } from 'lucide-react';
+import { API_CONFIG } from '../../config/api';
+import Header from '../layout/Header';
+import Hero from '../layout/Hero';
+import Footer from '../layout/Footer';
 
 // Filter options data
 const filterOptions = {
@@ -376,10 +376,6 @@ const JobPortal = () => {
         <div className="flex flex-wrap gap-2 pt-4 border-t border-gray-200">
           <button className="px-3 py-1 bg-gray-100 text-gray-700 rounded-md text-sm hover:bg-gray-200 transition-colors">
             Contract
-          </button>
-          <button className="px-3 py-1 bg-red-100 text-red-700 rounded-md text-sm hover:bg-red-200 transition-colors">
-            <Trash2 className="w-3 h-3 inline mr-1" />
-            Remove
           </button>
           <button className="px-3 py-1 bg-green-100 text-green-700 rounded-md text-sm hover:bg-green-200 transition-colors">
             $$$/hour

@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { User, Briefcase, Save, ArrowLeft, AlertCircle } from 'lucide-react';
-import Header from './Header';
-import Footer from './Footer';
-import { API_CONFIG, getAuthHeaders } from '../config/api';
+import Header from '../layout/Header';
+import Footer from '../layout/Footer';
+import { API_CONFIG, getAuthHeaders } from '../../config/api';
 
 interface JobFormData {
   recruiter_name: string;

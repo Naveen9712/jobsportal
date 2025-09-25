@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Lock, User, AlertCircle } from 'lucide-react';
-import { API_CONFIG } from '../config/api';
-import Header from './Header';
-import Footer from './Footer';
+import { API_CONFIG } from '../../config/api';
+import Header from '../layout/Header';
+import Footer from '../layout/Footer';
 
 const AdminLogin = () => {
   const navigate = useNavigate();

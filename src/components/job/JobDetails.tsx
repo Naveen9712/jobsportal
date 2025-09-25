@@ -17,9 +17,9 @@ import {
   Share2,
   User
 } from 'lucide-react';
-import Header from './Header';
-import Footer from './Footer';
-import { API_CONFIG } from '../config/api';
+import Header from '../layout/Header';
+import Footer from '../layout/Footer';
+import { API_CONFIG } from '../../config/api';
 
 interface DatabaseJob {
   id?: string | number;

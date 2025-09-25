@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User, Briefcase } from 'lucide-react';
-import { API_CONFIG } from '../config/api';
-import Header from './Header';
-import Hero from './Hero';
-import Footer from './Footer';
+import { API_CONFIG } from '../../config/api';
+import Header from '../layout/Header';
+import Hero from '../layout/Hero';
+import Footer from '../layout/Footer';
 
 const PostJobPage = () => {
   const navigate = useNavigate();

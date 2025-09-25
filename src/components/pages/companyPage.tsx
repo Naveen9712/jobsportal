@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Package, TrendingUp, Headphones, ChevronDown, ChevronRight } from 'lucide-react';
-import Header from './Header';
-import Hero from './Hero';
-import Footer from './Footer';
+import Header from '../layout/Header';
+import Hero from '../layout/Hero';
+import Footer from '../layout/Footer';
 
 const CompanyPage = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
