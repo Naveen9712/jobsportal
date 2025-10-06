@@ -14,34 +14,34 @@ export const API_CONFIG = {
   // Admin Endpoints
   ADMIN: {
     // Authentication
-      LOGIN: 'https://pncreators.com/wp-json/admin/v1/login',
+      LOGIN: 'https://trendyhomevibe.com/wp-json/admin/v1/login',
     
     // Dashboard
-    DASHBOARD: 'https://pncreators.com/wp-json/admin/v1/dashboard',
+    DASHBOARD: 'https://trendyhomevibe.com/wp-json/admin/v1/dashboard',
     
     // Job Management
     JOBS: {
       // Get all jobs (admin view with expired jobs)
-      LIST: 'https://pncreators.com/wp-json/admin/v1/jobs',
+      LIST: 'https://trendyhomevibe.com/wp-json/admin/v1/jobs',
       
       // Update specific job - use as `${API_CONFIG.ADMIN.JOBS.UPDATE}/${jobId}`
-      UPDATE: 'https://pncreators.com/wp-json/admin/v1/jobs',
+      UPDATE: 'https://trendyhomevibe.com/wp-json/admin/v1/jobs',
       
       // Delete specific job - use as `${API_CONFIG.ADMIN.JOBS.DELETE}/${jobId}`
-      DELETE: 'https://pncreators.com/wp-json/admin/v1/jobs',
+      DELETE: 'https://trendyhomevibe.com/wp-json/admin/v1/jobs',
       
       // Pin/Unpin job - use as `${API_CONFIG.ADMIN.JOBS.PIN}/${jobId}/pin`
-      PIN: 'https://pncreators.com/wp-json/admin/v1/jobs',
+      PIN: 'https://trendyhomevibe.com/wp-json/admin/v1/jobs',
       
       // Bulk actions
-      BULK: 'https://pncreators.com/wp-json/admin/v1/jobs/bulk',
+      BULK: 'https://trendyhomevibe.com/wp-json/admin/v1/jobs/bulk',
     }
   },
 
   // Legacy endpoints for backward compatibility
-  CREATE_URL: 'https://pncreators.com/wp-json/jobs/v1/create',
-  LIST_URL: 'https://pncreators.com/wp-json/jobs/v1/list',
-  SINGLE_URL: 'https://pncreators.com/wp-json/jobs/v1',
+  CREATE_URL: 'https://trendyhomevibe.com/wp-json/jobs/v1/create',
+  LIST_URL: 'https://trendyhomevibe.com/wp-json/jobs/v1/list',
+  SINGLE_URL: 'https://trendyhomevibe.com/wp-json/jobs/v1',
 } as const;
 
 // Helper function to get auth headers
