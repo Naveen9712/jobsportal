@@ -1,14 +1,14 @@
 // API Configuration
 export const API_CONFIG = {
   // Base WordPress REST API URL
-  BASE_URL: 'https://pncreators.com/wp-json',
+  BASE_URL: 'https://trendyhomevibe.com/wp-json',
 
   // Public Job Endpoints
   JOBS: {
-    CREATE: 'https://pncreators.com/wp-json/jobs/v1/create',
-    LIST: 'https://pncreators.com/wp-json/jobs/v1/list',
+    CREATE: 'https://trendyhomevibe.com/wp-json/jobs/v1/create',
+    LIST: 'https://trendyhomevibe.com/wp-json/jobs/v1/list',
     // Use as `${API_CONFIG.JOBS.SINGLE}/${jobId}`
-    SINGLE: 'https://pncreators.com/wp-json/jobs/v1',
+    SINGLE: 'https://trendyhomevibe.com/wp-json/jobs/v1',
   },
 
   // Admin Endpoints
